@@ -1,6 +1,9 @@
 #Escritor de Imagenes BMP
 #Author: Diego Estrada
 
+# Errores comunes:
+# "index out of range" puede suceder cuando el vertex esta fuera del viewport
+
 import struct
 
 def char(c):
@@ -31,6 +34,29 @@ class Render(object):
         self.height = height
         self.framebuffer = []
         self.glClear()
+    
+    def point(self, x,y):
+        self.framebuffer[y][x] = self.draw_color
+
+    def glInit(self):
+        pass
+
+    def glViewPort(self, x, y, width, height):
+        self.x_VP = x
+        self.y_VP = y
+        self.width_VP = width
+        self.height_VP = height
+
+    def glClearColor(self, r, g, b):
+        self.clear_color = color(int(round(r*255)),int(round(g*255)),int(round(b*255)))
+
+    def glColor(self, r,g,b):
+        self.draw_color = color(int(round(r*255)),int(round(g*255)),int(round(b*255)))
+
+    def glVertex(self, x, y):
+        xPixel = self.x_VP + int(round( self.width_VP/2 + x * self.width_VP/2))
+        yPixel = self.y_VP + int(round( self.height_VP/2 + y * self.height_VP/2))
+        self.point(round(xPixel),round(yPixel))
 
     def glFinish(self, filename):
         f = open(filename, 'bw')
@@ -64,41 +90,19 @@ class Render(object):
         
         f.close()
 
-    def point(self, x,y):
-        self.framebuffer[y][x] = self.draw_color
-
-    def glInit():
-        pass
-
-    
-
-    def glViewPort(self, x, y, width, height):
-        self.x_VP = x
-        self.y_VP = y
-        self.width_VP = width
-        self.height_VP = height
-
-    def glClearColor(self, r, g, b):
-        self.clear_color = color(int(round(r*255)),int(round(r*255)),int(round(r*255)))
-
-    def glColor(self, r,g,b):
-        self.draw_color = color(int(round(r*255)),int(round(r*255)),int(round(r*255)))
-
-    def glVertex(self, x, y):
-        xPixel = (x+1)*(self.width_VP/2) + self.x_VP
-        yPixel = (y+1)*(self.height_VP/2) + self.y_VP
-        self.point(round(xPixel),round(yPixel))
-
 r = Render()
-r.glCreateWindow(100,120)
-r.glViewPort(5,5,20,8)
-
-r.glVertex(-1,-1)
-r.glVertex(1,1)
-r.glVertex(-1,1)
-r.glVertex(0,0)
-r.glVertex(1,-1)
-r.glVertex(-1,0)
+r.glClearColor(1,0,1)
+r.glColor(1,1,0)
+r.glCreateWindow(100,200)
+r.glViewPort(1,1,80,80)
 r.glVertex(1,0)
+r.glVertex(1,1)
+r.glVertex(0,1)
+r.glVertex(0,0)
+r.glVertex(-1,-1)
+r.glVertex(-1,0)
+r.glVertex(0,-1)
+r.glVertex(-1,1)
+r.glVertex(1,-1)
+r.glFinish('output.bmp')
 
-r.glFinish('outFinal.bmp')
